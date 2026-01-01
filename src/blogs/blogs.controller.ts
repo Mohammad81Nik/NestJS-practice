@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { BlogsService } from './blogs.service';
 import { CreateBlogDto } from './dto';
 import { transformer } from 'src/utils/transformer';
@@ -14,9 +24,7 @@ export class BlogsController {
 
   @Get(':id')
   async getBlogById(@Param('id') id: string) {
-    return await transformer(
-      this.blogsService.getBlogById(Number(id)),
-    );
+    return await transformer(this.blogsService.getBlogById(Number(id)));
   }
 
   @Post()
