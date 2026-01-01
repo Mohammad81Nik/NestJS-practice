@@ -23,11 +23,15 @@
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/typeorm": "^11.0.0",
     "cors": "^2.8.5",
     "custom-logger-middleware": "^1.0.15",
     "helmet": "^8.1.0",
+    "mysql2": "^3.16.0",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "typeorm": "^0.3.28",
+    "zod": "^4.3.4"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
