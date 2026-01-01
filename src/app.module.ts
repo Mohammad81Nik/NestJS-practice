@@ -6,9 +6,26 @@ import cors from 'cors';
 import helmet from 'helmet';
 import { expressLogger } from 'custom-logger-middleware';
 import { ErrorsModule } from './errors/errors.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from './users/users.entity';
 
 @Module({
-  imports: [UsersModule, BlogsModule, ErrorsModule],
+  imports: [
+    UsersModule,
+    BlogsModule,
+    ErrorsModule,
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: 'localhost',
+      port: 3306,
+      username: 'root',
+      password: 'Ilovedonuts123@',
+      database: 'nestjs_practice',
+      entities: [User],
+      
+      // synchronize: true,
+    }),
+  ],
   controllers: [],
   providers: [],
 })

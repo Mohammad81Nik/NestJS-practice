@@ -1,49 +1,54 @@
-import { Injectable } from '@nestjs/common';
-import { User } from './user.interface';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './users.entity';
+import { Repository } from 'typeorm';
+import { CreateUserDto } from './dto/dto';
 
 @Injectable()
 export class UsersService {
-  private readonly users: User[] = [];
-
-  create(user: Omit<User, 'created_at'>) {
-    this.users.push({
-      ...user,
-      created_at: new Date(),
-    });
-  }
+  constructor(
+    @InjectRepository(User) private userRepository: Repository<User>,
+  ) {}
 
   findAll() {
-    return this.users;
+    return this.userRepository.find({});
   }
 
-  findById(id: number) {
-    const intended = this.users.find((user) => user.id === id);
+  async findById(id: number) {
+    const intended = (await this.userRepository.findBy({ id }))[0];
 
     if (!intended) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
 
     return intended;
   }
 
-  delete(id: number) {
-    const intended = this.findById(id);
+  async create(user: CreateUserDto) {
+    const userExists = await this.userRepository.findOne({
+      where: { email: user.email },
+    });
 
-    this.users.splice(this.users.indexOf(intended), 1);
+    if (userExists) {
+      throw new BadRequestException('User already exists');
+    }
+
+    return this.userRepository.save(user);
   }
 
-  update(id: number, user: Partial<Omit<User, 'created_at'>>) {
-    const intended = this.findById(id);
+  async update(id: number, user: Partial<CreateUserDto>) {
+    await this.findById(id);
 
-    const intendedIndex = this.users.indexOf(intended);
+    return this.userRepository.update(id, user);
+  }
 
-    const updatedIntended = {
-      ...intended,
-      ...user,
-    };
+  async delete(id: number) {
+    await this.findById(id);
 
-    this.users[intendedIndex] = updatedIntended;
-
-    return updatedIntended;
+    return this.userRepository.delete(id);
   }
 }

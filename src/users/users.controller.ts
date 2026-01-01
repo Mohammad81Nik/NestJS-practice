@@ -4,50 +4,47 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
+  UsePipes,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto';
+import { type CreateUserDto, createUserSchema } from './dto/dto';
 import { transformer } from 'src/utils/transformer';
+import { ZodValidationPipe } from 'src/pipes/zod-validation.pipe';
 
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get()
-  async findAllUsers() {
-    return await transformer(this.usersService.findAll());
+  async findAll() {
+    return transformer(await this.usersService.findAll());
   }
 
   @Get(':id')
-  async findUserById(@Param('id') id: string) {
-    return await transformer(this.usersService.findById(Number(id)));
+  async findById(@Param('id', ParseIntPipe) id: number) {
+    return transformer(await this.usersService.findById(id));
   }
 
   @Post()
-  async createUser(@Body() createUserDto: CreateUserDto) {
-    const newUser = {
-      id: Math.random() * 10,
-      ...createUserDto,
-    };
-    this.usersService.create(newUser);
-
-    return await transformer(newUser);
+  @UsePipes(new ZodValidationPipe(createUserSchema))
+  async create(@Body() createUserDto: CreateUserDto) {
+    return transformer(await this.usersService.create(createUserDto));
   }
 
   @Put(':id')
-  async updatedUser(
-    @Param('id') id: string,
-    @Body() updateUserDto: Partial<CreateUserDto>,
+  @UsePipes(new ZodValidationPipe(createUserSchema.optional()))
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() editUserDto: Partial<CreateUserDto>,
   ) {
-    const updated = this.usersService.update(Number(id), updateUserDto);
-
-    return await transformer(updated);
+    return transformer(await this.usersService.update(id, editUserDto));
   }
 
   @Delete(':id')
-  async deleteUser(@Param('id') id: string) {
-    return await transformer(this.usersService.delete(Number(id)));
+  async delete(@Param('id', ParseIntPipe) id: number) {
+    return transformer(await this.usersService.delete(id));
   }
 }
