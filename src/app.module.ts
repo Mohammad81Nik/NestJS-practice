@@ -7,7 +7,7 @@ import helmet from 'helmet';
 import { expressLogger } from 'custom-logger-middleware';
 import { ErrorsModule } from './errors/errors.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './users/users.entity';
+import { TYPEORM_OPTIONS } from './config/typeorm.config';
 
 @Module({
   imports: [
@@ -15,15 +15,7 @@ import { User } from './users/users.entity';
     BlogsModule,
     ErrorsModule,
     TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'Ilovedonuts123@',
-      database: 'nestjs_practice',
-      entities: [User],
-      
-      // synchronize: true,
+      ...TYPEORM_OPTIONS,
     }),
   ],
   controllers: [],

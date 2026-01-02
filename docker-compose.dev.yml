@@ -1,0 +1,45 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      args:
+        MYSQL_HOST: "db"
+        MYSQL_PORT: 3306
+        MYSQL_DATABASE: 'nestjs_app_dev'
+        MYSQL_USERNAME: 'root'
+        MYSQL_PASSWORD: '12345678'
+        MYSQL_ROOT_PASSWORD: '12345678'
+        NODE_ENV: "development"
+    environment:
+      MYSQL_HOST: "db"
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: 'nestjs_app_dev'
+      MYSQL_USERNAME: 'root'
+      MYSQL_PASSWORD: '12345678'
+      MYSQL_ROOT_PASSWORD: '12345678'
+      NODE_ENV: "development"
+    volumes:
+      - ./src:/app/src
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: mysql:9.5.0
+    container_name: mysql-dev
+    environment:
+      MYSQL_DATABASE: 'nestjs_app_dev'
+      MYSQL_ROOT_PASSWORD: '12345678'
+      MYSQL_PASSWORD: '12345678'
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 20s
+      retries: 10
+volumes:
+  mysql_data:

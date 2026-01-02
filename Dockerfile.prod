@@ -1,0 +1,43 @@
+
+FROM node:24-alpine AS builder
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+ARG MYSQL_HOST
+ARG MYSQL_PORT
+ARG MYSQL_USERNAME
+ARG MYSQL_PASSWORD
+ARG MYSQL_ROOT_PASSWORD
+ARG MYSQL_DATABASE
+ARG NODE_ENV
+
+ENV MYSQL_HOST=$MYSQL_HOST
+ENV MYSQL_PORT=$MYSQL_PORT
+ENV MYSQL_USERNAME=$MYSQL_USERNAME
+ENV MYSQL_PASSWORD=$MYSQL_PASSWORD
+ENV MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
+ENV MYSQL_DATABASE=$MYSQL_DATABASE
+ENV NODE_ENV=$NODE_ENV
+
+RUN npm run build 
+
+FROM node:24-alpine AS runner
+
+WORKDIR /app
+
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package*.json ./
+COPY entrypoint.prod.sh ./
+
+RUN chmod +x entrypoint.prod.sh
+
+EXPOSE 3000
+
+ENTRYPOINT ["./entrypoint.prod.sh"]

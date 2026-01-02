@@ -13,7 +13,4 @@ export class User {
 
   @Column()
   password: string;
-
-//   @Column({ default: new Date() })
-//   created_at: Date;
 }
