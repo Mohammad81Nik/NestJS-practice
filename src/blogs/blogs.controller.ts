@@ -3,17 +3,14 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
-  HttpStatus,
   Param,
   ParseIntPipe,
   Post,
   Put,
-  UsePipes,
 } from '@nestjs/common';
 import { BlogsService } from './blogs.service';
-import { createBlogSchema, type CreateBlogDto } from './dto';
 import { transformer } from 'src/utils/transformer';
+import { type CreateBlogDto, createBlogSchema } from './dto';
 import { ZodValidationPipe } from 'src/pipes/zod-validation.pipe';
 
 @Controller('blogs')
@@ -21,37 +18,33 @@ export class BlogsController {
   constructor(private blogsService: BlogsService) {}
 
   @Get()
-  async getAll() {
-    return await transformer(this.blogsService.getAll());
+  async findAll() {
+    return transformer(await this.blogsService.findAll());
   }
 
   @Get(':id')
-  async getBlogById(@Param('id', ParseIntPipe) id: number) {
-    return await transformer(this.blogsService.getBlogById(id));
+  async findById(@Param('id', ParseIntPipe) id: number) {
+    return transformer(await this.blogsService.findById(id));
   }
 
   @Post()
-  @UsePipes(new ZodValidationPipe(createBlogSchema))
-  async create(@Body() createBlogDto: CreateBlogDto) {
-    return await transformer(this.blogsService.create(createBlogDto));
+  async create(
+    @Body(new ZodValidationPipe(createBlogSchema)) createBlogDto: CreateBlogDto,
+  ) {
+    return transformer(await this.blogsService.create(createBlogDto));
   }
 
   @Put(':id')
-  async update(
-    @Param(
-      'id',
-      new ParseIntPipe({
-        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-      }),
-    )
-    id: string,
-    @Body() editBlogDto: Partial<CreateBlogDto>,
+  async updated(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(new ZodValidationPipe(createBlogSchema.optional()))
+    updateBlogDto: Partial<CreateBlogDto>,
   ) {
-    return await transformer(this.blogsService.update(Number(id), editBlogDto));
+    return transformer(await this.blogsService.update(id, updateBlogDto));
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: string) {
-    return await transformer(this.blogsService.delete(Number(id)));
+  async delete(@Param('id', ParseIntPipe) id: number) {
+    return transformer(await this.blogsService.delete(id));
   }
 }

@@ -1,8 +1,11 @@
 import { Module } from '@nestjs/common';
 import { BlogsController } from './blogs.controller';
 import { BlogsService } from './blogs.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Blog } from './blogs.entity';
 
 @Module({
+  imports: [TypeOrmModule.forFeature([Blog])],
   controllers: [BlogsController],
   providers: [BlogsService],
   // by adding the blogs service provider in the exports for the blogs module,

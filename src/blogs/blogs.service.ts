@@ -1,61 +1,42 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Blog } from './interface';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Blog } from './blogs.entity';
+import { Repository } from 'typeorm';
 import { CreateBlogDto } from './dto';
 
 @Injectable()
 export class BlogsService {
-  private readonly blogs: Blog[] = [];
+  constructor(
+    @InjectRepository(Blog) private blogsRepository: Repository<Blog>,
+  ) {}
 
-  getAll() {
-    return this.blogs;
+  findAll() {
+    return this.blogsRepository.find();
   }
 
-  getBlogById(id: number) {
-    const intended = this.blogs.find((blog) => blog.id === id);
+  async findById(id: number) {
+    const intended = (await this.blogsRepository.findBy({ id }))[0];
 
     if (!intended) {
-      throw new NotFoundException();
+      throw new NotFoundException('Blog not found');
     }
 
     return intended;
   }
 
-  create(blog: CreateBlogDto) {
-    const newBlog = {
-      id: this.blogs.length + 1,
-      ...blog,
-      created_at: new Date(),
-      updated_at: new Date(),
-    };
-
-    this.blogs.push(newBlog);
-
-    return newBlog;
+  async create(blog: CreateBlogDto) {
+    return this.blogsRepository.save(blog);
   }
 
-  update(id: number, blog: Partial<CreateBlogDto>) {
-    const intended = this.getBlogById(id);
+  async update(id: number, blog: Partial<CreateBlogDto>) {
+    await this.findById(id);
 
-    const intendedIndex = this.blogs.indexOf(intended);
-
-    const updatedBlog = {
-      ...intended,
-      ...blog,
-      updated_at: new Date(),
-    };
-
-    this.blogs[intendedIndex] = updatedBlog;
-
-    return updatedBlog;
+    return this.blogsRepository.update(id, blog);
   }
 
-  delete(id: number) {
-    const intended = this.getBlogById(id);
+  async delete(id: number) {
+    await this.findById(id);
 
-    const intendedIndex = this.blogs.indexOf(intended);
-
-    this.blogs.splice(intendedIndex, 1);
-
-    return intended;
+    return this.blogsRepository.delete(id);
   }
 }

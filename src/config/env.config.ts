@@ -17,12 +17,10 @@ const envSchema = z
   })
   .transform((data) => ({
     ...data,
-    MIGRATIONS_PATH: path.join(
-      process.cwd(),
-      'dist',
-      'migrations',
-      '*{.js,.ts}',
-    ),
+    MIGRATIONS_PATH:
+      data.NODE_ENV === 'development'
+        ? path.join(process.cwd(), 'src', 'migrations', '*{.js,.ts}')
+        : path.join(process.cwd(), 'dist', 'migrations', '*{.js,.ts}'),
   }));
 
 const parsed = envSchema.safeParse(process.env);

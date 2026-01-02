@@ -8,12 +8,14 @@ import { expressLogger } from 'custom-logger-middleware';
 import { ErrorsModule } from './errors/errors.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TYPEORM_OPTIONS } from './config/typeorm.config';
+import { CatsModule } from './cats/cats.modules';
 
 @Module({
   imports: [
     UsersModule,
     BlogsModule,
     ErrorsModule,
+    CatsModule,
     TypeOrmModule.forRoot({
       ...TYPEORM_OPTIONS,
     }),
