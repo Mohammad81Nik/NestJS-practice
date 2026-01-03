@@ -1,5 +1,6 @@
 services:
   app:
+    image: nestjs_app_prod:1.0.0
     build:
       args:
         MYSQL_HOST: "db"
@@ -27,7 +28,7 @@ services:
 
   db:
     image: mysql:9.5.0
-    container_name: mysql
+    container_name: mysql_prod
     environment:
       MYSQL_DATABASE: 'nestjs_app_prod'
       MYSQL_PASSWORD: '12345678'
@@ -35,10 +36,10 @@ services:
     ports:
       - "3307:3306"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - mysql_data_prod:/var/lib/mysql
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       timeout: 20s
       retries: 10
 volumes:
-  mysql_data:
+  mysql_data_prod:

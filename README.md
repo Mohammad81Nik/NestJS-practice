@@ -37,7 +37,7 @@ docker-compose -f docker-compose.prod.yml up
 
 ## Database Migrations
 
-**Note:** The migration:generate command requires the full path including the migrations directory:
+**Note:** When generating migrations, you must provide the path to the migrations folder where the migration files will be created:
 
 ```bash
 # Generate migration
@@ -45,9 +45,6 @@ npm run migration:generate src/migrations/<migration-name>
 
 # Run migrations
 npm run migration:run
-
-# Revert migration
-npm run migration:revert
 ```
 
 ## Testing

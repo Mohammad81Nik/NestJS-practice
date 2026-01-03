@@ -1,15 +1,9 @@
 import { DataSource } from 'typeorm';
 import { DataSourceOptions } from 'typeorm/browser';
 import { config } from './env.config';
-import { User } from '../users/users.entity.js';
-import { Blog } from '../blogs/blogs.entity.js';
-import path from 'path';
+import { User } from 'src/users/users.entity';
+import { Blog } from 'src/blogs/blogs.entity';
 import { Cat } from 'src/cats/cats.entity';
-
-console.log(
-  'path is: ',
-  path.join(process.cwd(), 'dist', 'migrations', '*{.js,.ts}'),
-);
 
 export const TYPEORM_OPTIONS: DataSourceOptions = {
   type: 'mysql',
